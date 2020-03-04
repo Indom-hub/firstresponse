@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS `firstresponse`.`users` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(50) NOT NULL,
+  `license` TEXT NOT NULL,
+  `group` INT NOT NULL DEFAULT '0',
+  `whitelisted_at` TIMESTAMP NULL DEFAULT NULL,
+  `banned_at` TIMESTAMP NULL DEFAULT NULL,
+  `banned_reason` TEXT NULL DEFAULT NULL,
+  `banned_by` INT NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE = InnoDB;
