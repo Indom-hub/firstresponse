@@ -7,7 +7,7 @@ function User.New(playerObject)
   
   -- User Runtime Data
   newUser.source = playerObject.source
-  newuser.license = playerObject.license
+  newUser.license = playerObject.license
   newUser.ping = function()
     return GetPlayerPing(newUser.source)
   end
@@ -23,49 +23,26 @@ function User.New(playerObject)
   newUser.banned_by = nil
   newUser.created_at = nil
 
+  local results = exports.externalsql:AsyncQuery({
+    query = [[ INSERT INTO `users` (`name`, `license`, `group`) VALUES (:name, :license, :group) ]],
+    data = {
+      name = newUser.name,
+      license = newUser.license,
+      group = newUser.group
+    }
+  })
+
+  print(json.encode(results))
+
   return newUser
 end
 
--- [[ MOVE THIS FUNCTION TO A DATABASE HELPERS RESOURCE... NOT NEED FOR ITS USE HERE ]] -- 
--- function User.FromDB(keys, playerObject)
---   local newUser = {}
-
---   newUser.source = playerObject.source
---   newUser.ping = function()
---     return GetPlayerPing(newUser.source)
---   end
-
---   local q = "SELECT * FROM `users` "
-
---   for k, v in pairs(keys) do
---     if type(v) == "string" then v = "'" .. v .. "'" end
---     q = q .. "WHERE `" .. k .. "` = " .. v
---   end
-
---   q = q .. " LIMIT 1"
-
---   local results = exports.externalsql:AsyncQuery({
---     query = q,
---     data = {}
---   })
-
---   local data = results.data[1]
-
---   if #data >= 1 then
---     newUser.id = data.id
---     newUser.name = data.name
---   end
-
---   return newUser
--- end
--- [[ ^^^^ MOVE THIS FUNCTION TO A DATABASE HELPERS RESOURCE... NOT NEED FOR ITS USE HERE ^^^^ ]] -- 
-
 function User.FromDB(playerObject)
   local newUser = {}
+  setmetatable(newUser, User)
 
   newUser.source = playerObject.source
-  newuser.license = playerObject.license
-  newUser.ping = function() return GetPlayerPing(newUser.source) end
+  --newUser.ping = function() return GetPlayerPing(newUser.source) end
 
   local q = [[ SELECT * FROM `users` WHERE `license` = :license LIMIT 1 ]]
   local results = exports.externalsql:AsyncQuery({
@@ -73,18 +50,43 @@ function User.FromDB(playerObject)
     data = { license = playerObject.license }
   })
 
-  if #data >= 1 then
+  local data = results.data[1]
+
+  if data ~= nil then
     newUser.id = data.id
     newUser.name = data.name
+    newUser.license = data.license
+    newUser.group = 0 -- Use Config Default Value [ Eventually use group enums ]
+    newUser.whitelisted_at = data.whitelisted_at
+    newUser.banned_at = data.banned_at
+    newUser.banned_reason = data.banned_reason
+    newUser.banned_by = data.banned_by
+    newUser.created_at = data.created_at
   end
+  
+  return newUser
+end
+
+function User.DoesUserExist(playerObject)
+  local q = [[ SELECT * FROM `users` WHERE `license` = :license LIMIT 1 ]]
+  local results = exports.externalsql:AsyncQuery({
+    query = q,
+    data = { license = playerObject.license }
+  })
+
+  local data = results.data[1]
+  if data ~= nil then
+    return true
+  end
+  return false
 end
 
 function User:Save()
-  -- Trigger Save Data
+  print("SAVING USER!")
 end
 
 function User:Ban()
-  -- Ban User
+  print("BANNING USER")
 end
 
 function User:Kick(reason)
@@ -97,10 +99,11 @@ function User:Warn(reason)
   -- self:TriggerEvent("FirstResponse:WarnUserNotification")
 end
 
-function User:TriggerEvent(event, args...)
-  TriggerClientEvent(event, self.source, args)
+function User:TriggerEvent(event, ...)
+  TriggerClientEvent(event, self.source, ...)
 end
 
 Citizen.CreateThread(function()
-
+  local userFound = User.FromDB({ source = 1, license = "license:12345" })
+  userFound:Save()
 end)
