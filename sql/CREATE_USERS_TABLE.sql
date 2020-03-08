@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `firstresponse`.`users` (
   `banned_at` TIMESTAMP NULL DEFAULT NULL,
   `banned_reason` TEXT NULL DEFAULT NULL,
   `banned_by` INT NULL DEFAULT NULL,
+  `banned_until` DATETIME NULL DEFAULT NULL,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE = InnoDB;
