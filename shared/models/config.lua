@@ -33,3 +33,15 @@ function Config:GetValues(keys)
 
   return data
 end
+
+function FindTableValue(t, key)
+  for a, av in pairs(t) do
+    if a == key then
+      if type(av) == "table" then
+        return {}
+      else
+        return av
+      end
+    end
+  end
+end

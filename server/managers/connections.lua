@@ -55,3 +55,9 @@ AddEventHandler("FirstResponse:PlayerJoined", function()
 
   Players.Add({ name = GetPlayerName(src), source = src, license = license })
 end)
+
+Citizen.CreateThread(function()
+  Citizen.Wait(1000)
+  local key_joints = String.Split("user.roles.user", ".")
+  print(json.encode(key_joints))
+end)

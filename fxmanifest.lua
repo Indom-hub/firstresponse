@@ -10,16 +10,14 @@ dependencies {
 
 shared_scripts {
   "./shared/*.lua",
-  "./shared/enums/*.lua",
-  "./shared/models/*.lua",
   "./shared/globals/*.lua",
+  "./shared/models/*.lua",
+  "./shared/locales/*.lua",
   "./shared/configs/*.lua",
-  "./shared/locales/*.lua"
 }
 
 server_scripts {
   --[[ Needed Files ]]--
-  "./server/enums/*.lua",
   "./server/globals/*.lua",
   "./server/models/*.lua",
   "./server/locales/*.lua",
@@ -32,7 +30,6 @@ server_scripts {
 
 client_scripts {
   --[[ Needed Files ]]--
-  "./client/enums/*.lua",
   "./client/globals/*.lua",
   "./client/models/*.lua",
   "./client/locales/*.lua",
