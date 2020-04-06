@@ -14,7 +14,7 @@ AddEventHandler("playerConnecting", function(playerName, setKickReason, deferral
   })
 
   if license == nil then
-    deferrals.done(lang.licensemissing or "LICENSEMISSING_NOT_LOADING")
+    deferrals.done(lang[1] or "LICENSEMISSING_NOT_LOADING")
     return
   end
   
@@ -25,12 +25,12 @@ AddEventHandler("playerConnecting", function(playerName, setKickReason, deferral
 
     if serverWhitelisted then
       if user.whitelisted_at == nil then
-        deferrals.done(lang["notwhitelisted"] or "NOTWHITELISTED_NOT_LOADING")
+        deferrals.done(lang[2] or "NOTWHITELISTED_NOT_LOADING")
       end
     end
 
     if user.banned_at ~= nil then
-      local banMessage = String.Interpolate(lang.banned, { reason = "Testing_Reason", by = "Xander1998", time = "forever" })
+      local banMessage = String.Interpolate(lang[3], { reason = "Testing_Reason", by = "Xander1998", time = "forever" })
       deferrals.done(banMessage or "BAN_MESSAGE_NOT_LOADING")
     end
 
@@ -38,7 +38,7 @@ AddEventHandler("playerConnecting", function(playerName, setKickReason, deferral
   else
     User.New(playerObject)
     if serverWhitelisted then
-      deferrals.done(lang.notwhitelisted or "NOTWHITELISTED_NOT_LOADING")
+      deferrals.done(lang[2] or "NOTWHITELISTED_NOT_LOADING")
     end
   end
   deferrals.done()
@@ -56,8 +56,6 @@ AddEventHandler("FirstResponse:PlayerJoined", function()
   Players.Add({ name = GetPlayerName(src), source = src, license = license })
 end)
 
-Citizen.CreateThread(function()
-  Citizen.Wait(1000)
-  local key_joints = String.Split("user.roles.user", ".")
-  print(json.encode(key_joints))
-end)
+-- Citizen.CreateThread(function()
+--   Citizen.Wait(1000)
+-- end)

@@ -5,6 +5,7 @@ fx_version "adamant"
 game "gta5"
 
 dependencies {
+  "databaseserver",
   "externalsql"
 }
 
