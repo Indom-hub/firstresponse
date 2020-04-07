@@ -37,7 +37,7 @@ function User.FromDB(playerObject)
 
   newUser.source = playerObject.source
 
-  local defaultRole = Configs.get("roles"):GetValue("user")
+  local defaultRole = Configs.Get("roles"):GetValue("user")
 
   local results = exports.externalsql:AsyncQuery({
     query = [[ SELECT * FROM `users` WHERE `license` = :license LIMIT 1 ]],

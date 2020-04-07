@@ -6,7 +6,7 @@ import VueAxios from "vue-axios"
 
 // Views
 import CharacterManager from './views/CharacterManager.vue'
-import CharacterEditor from './views/CharacterEditor.vue'
+import CharacterCreator from './views/CharacterCreator.vue'
 
 // Vuetify Extras
 import 'material-design-icons-iconfont/dist/material-design-icons.css' // Load above vuetify.min.css to avoid styling issues
@@ -24,9 +24,9 @@ export default new Router({
 			component: CharacterManager
 		},
 		{
-			path: "/chareditor",
-			name: "chareditor",
-			component: CharacterEditor
+			path: "/charcreator",
+			name: "charcreator",
+			component: CharacterCreator
 		}
 	]
 })

@@ -3,7 +3,7 @@
     <v-layout row wrap align-center>
       <v-flex>
         <v-card>
-          <v-toolbar color="blue" dark flat class="display-1 justify-center font-weight-bold">
+          <v-toolbar color="#2d3436" dark flat class="display-1 justify-center font-weight-bold">
             <v-spacer/>
               CHARACTERS
             <v-spacer/>
@@ -17,7 +17,7 @@
                 <!-- New Character Card -->
                 <v-flex xs12 md6 lg4 v-if="characters.length < maxCharacters">
                   <v-card height="100%">
-                    <v-toolbar color="blue" dark flat class="display-1 justify-center font-weight-bold">
+                    <v-toolbar color="#2d3436" dark flat class="display-1 justify-center font-weight-bold">
                       <v-spacer/>
                         NEW CHARACTER
                       <v-spacer/>

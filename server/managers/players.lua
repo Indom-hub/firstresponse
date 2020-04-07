@@ -34,3 +34,8 @@ function Players.FindBySource(source)
   end
   return nil
 end
+
+function Players.TriggerEventOnJob(jobKey, event, ...)
+  --Find all players that are the job specified in the `jobKey` arg.
+  --Trigger Event on all those players with defined `args` passed.
+end
