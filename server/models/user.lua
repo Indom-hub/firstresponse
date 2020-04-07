@@ -37,6 +37,8 @@ function User.FromDB(playerObject)
 
   newUser.source = playerObject.source
 
+  local defaultRole = Configs.get("roles"):GetValue("user")
+
   local results = exports.externalsql:AsyncQuery({
     query = [[ SELECT * FROM `users` WHERE `license` = :license LIMIT 1 ]],
     data = { license = playerObject.license }
@@ -48,7 +50,7 @@ function User.FromDB(playerObject)
     newUser.id = data.id
     newUser.name = data.name
     newUser.license = data.license
-    newUser.group = 0 -- Use Config Default Value [ Eventually use group enums ]
+    newUser.group = defaultRole
     newUser.whitelisted_at = data.whitelisted_at
     newUser.banned_at = data.banned_at
     newUser.banned_reason = data.banned_reason
