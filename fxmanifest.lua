@@ -31,8 +31,10 @@ server_scripts {
 
 client_scripts {
   --[[ Needed Files ]]--
+  "./client/enums/*.lua",
   "./client/globals/*.lua",
   "./client/models/*.lua",
+  "./client/models/builders/*.lua",
   "./client/locales/*.lua",
   "./client/configs/*.lua",
 
