@@ -4,7 +4,7 @@ AddEventHandler("playerConnecting", function(playerName, setKickReason, deferral
   deferrals.defer()
   
   local src = source
-  local license = Helpers.GetIdentifierType("license", src)
+  local license = Utils.GetIdentifierType("license", src)
   local playerObject = {source = src, license = license, name = playerName}
   local serverWhitelisted = Configs.Get("server"):GetValue("whitelisted")
   local lang = Locales.Get("en"):GetValues({
@@ -46,7 +46,7 @@ end)
 
 AddEventHandler("FirstResponse:PlayerJoined", function()
   local src = source
-  local license = Helpers.GetIdentifierType("license", src)
+  local license = Utils.GetIdentifierType("license", src)
   local lang = Locales.Get("en"):GetValue("licensemissing")
 
   if license == nil then
@@ -58,4 +58,15 @@ end)
 
 -- Citizen.CreateThread(function()
 --   Citizen.Wait(1000)
+
+--   local now = DateTime.Now()
+--   now:Add({ 
+--     year = 0,
+--     month = 0,
+--     week = 0,
+--     day = 0,
+--     hour = 0,
+--     minute = 0,
+--     second = 0
+--   }, true)
 -- end)
