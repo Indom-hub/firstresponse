@@ -4,12 +4,15 @@ local propEnum = Enums.Get("PedProps")
 CharacterBuilder = {}
 CharacterBuilder.__index = CharacterBuilder
 
+-- Character Builder Default
 function CharacterBuilder.New()
   local newCharacterBuilder = {}
   setmetatable(newCharacterBuilder, CharacterBuilder)
 
   newCharacterBuilder.ped = PlayerPedId()
-  newCharacterBuilder.data = {}
+  newCharacterBuilder.data = {
+    eyeColor = 0
+  }
 
   -- Parent Data
   newCharacterBuilder.parents = { father = 0, mother = 0, mix = 0.5 }
@@ -24,6 +27,43 @@ function CharacterBuilder.New()
   newCharacterBuilder.props = {}
   for k, v in pairs(componentEnum) do
     newCharacterBuilder.props[v] = { drawable = 0, texture = 0 }
+  end
+
+  return newCharacterBuilder
+end
+
+-- Character Builder Ped Model Settings
+function CharacterBuilder.FromPed(ped, data)
+  local newCharacterBuilder = {}
+  setmetatable(newCharacterBuilder, CharacterBuilder)
+
+  newCharacterBuilder.ped = PlayerPedId()
+  newCharacterBuilder.data = {
+    eyeColor = 0
+  }
+
+  -- Data Overrides
+  for k, v in pairs(data) do
+    newCharacterBuilder.data[k] = v
+  end
+
+  -- Parent Data
+  newCharacterBuilder.parents = { father = 0, mother = 0, mix = 0.5 }
+
+  -- Components
+  newCharacterBuilder.components = {}
+  for _, v in pairs(componentEnum) do
+    local currentDrawable = GetPedDrawableVariation(newCharacterBuilder.ped, v)
+    local currentTexture = GetPedTextureVariation(newCharacterBuilder.ped, v)
+    newCharacterBuilder.components[v] = { drawable = currentDrawable, texture = currentTexture }
+  end
+
+  -- Props
+  newCharacterBuilder.props = {}
+  for _, v in pairs(propEnum) do
+    local currentProp = GetPedPropIndex(newCharacterBuilder.ped, v)
+    local currentTexture = GetPedPropTextureIndex(newCharacterBuilder.ped, v)
+    newCharacterBuilder.props[v] = { prop = currentProp, texture = currentTexture }
   end
 
   return newCharacterBuilder
@@ -177,7 +217,19 @@ end
 
 -- Ped Eye Color
 function CharacterBuilder:SetEyeColor()
-  if Utils.GetPedType(self.ped) then
+  if Utils.IsMPPed(self.ped) then
+    
+  end
+end
+
+function CharacterBuilder:NextEyeColor()
+  if Utils.IsMPPed(self.ped) then
+
+  end
+end
+
+function CharacterBuilder:PrevEyeColor()
+  if Utils.IsMPPed(self.ped) then
 
   end
 end

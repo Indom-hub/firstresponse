@@ -1,5 +1,15 @@
 Utils = {}
 
+function Utils.IsMPPed(ped)
+  local mpFemaleHash = GetHashKey("mp_f_freemode_01")
+  local mpMaleHash = GetHashKey("mp_m_freemode_01")
+  local model = GetEntityModel(ped)
+  if model == mpFemaleHash or model == mpMaleHash then
+    return true
+  end
+  return false
+end
+
 function Utils.GetPedType(ped)
   local mpFemaleHash = GetHashKey("mp_f_freemode_01")
   local mpMaleHash = GetHashKey("mp_m_freemode_01")
