@@ -22,3 +22,21 @@ function Utils.GetPedType(ped)
     return "normal"
   end
 end
+
+function Utils.IncrimentNumber(type, amount, baseNumber, maxNumber)
+  local newIndex = currentIndex
+  for a = 1, amount do
+    if type == "+" then
+      newIndex = newIndex + 1
+      if newIndex > maxIndex then
+        newIndex = 0
+      end
+    elseif type == "-" then
+      newIndex = newIndex - 1
+      if newIndex < 0 then
+        newIndex = maxIndex
+      end
+    end
+  end
+  return newIndex
+end

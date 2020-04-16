@@ -191,16 +191,61 @@ function CharacterBuilder:PrevComponentTexture(component)
 end
 
 -- Prop Methods
-function CharacterBuilder:SetProp()
+-- function CharacterBuilder:SetPropDrawable(prop, drawable)
+--   prop = propEnum[prop]
 
-end
+--   if not prop then return end
 
-function CharacterBuilder:NextProp()
+--   local propCount = GetNumberOfPedPropDrawableVariations(self.ped, prop) - 1
+--   local currentProp = self.props[prop].drawable
 
-end
+--   if drawable < 0 then
+--     currentProp = propCount
+--   elseif drawable > propCount then
+--     currentProp = 0
+--   end
 
-function CharacterBuilder:PrevProp()
+--   SetPedPropIndex(self.ped, prop, drawable, 0, true)
+--   self.props[prop].drawable = currentProp
+--   self.props[prop].texture = 0
+-- end
 
+function CharacterBuilder:SetPropDrawable(prop, value)
+  prop = propEnum[prop]
+
+  if not prop then return end
+
+  local propCount = GetNumberOfPedPropDrawableVariations(self.ped, prop) - 1
+  local currentProp = self.props[prop].drawable
+
+  if type(value) == "number" then
+    
+    if value > propCount then
+      value = 0
+    elseif value < 0 then
+      value = propCount
+    end
+
+    SetPedPropIndex(self.ped, prop, value, 0, true)
+    self.props[prop].drawable = value
+    self.props[prop].texture = 0
+  elseif type(value) == "string" then
+    local type = "+"
+    local incrimental = 0
+
+    if string.match(value, "+") then
+      type = "+"
+    elseif string.match(value, "-") then
+      type = "-"
+    end
+
+    incrimental = tonumber(value:gsub(type, ""))
+
+    local newProp = Utils.IncrimentNumber(type, incrimental, currentProp, propCount)
+    SetPedPropIndex(self.ped, prop, newProp, 0, true)
+    self.props[prop].drawable = newProp
+    self.props[prop].texture = 0
+  end
 end
 
 function CharacterBuilder:SetPropTexture()
