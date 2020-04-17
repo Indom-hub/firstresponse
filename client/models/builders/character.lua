@@ -69,6 +69,7 @@ function CharacterBuilder.FromPed(ped, data)
   return newCharacterBuilder
 end
 
+-- Set Model Method
 function CharacterBuilder:SetModel(model)
   model = GetHashKey(model)
   local timeStart = GetGameTimer()
@@ -89,141 +90,95 @@ function CharacterBuilder:SetModel(model)
 end
 
 -- Component Methods
-function CharacterBuilder:SetComponentDrawable(component, drawable)
+function CharacterBuilder:SetComponentDrawable(component, value)
   component = componentEnum[component]
 
-  if not component then return end
+  if not prop then return end
 
   local drawableCount = GetNumberOfPedDrawableVariations(self.ped, component) - 1
+  local currentComponent = self.components[component].drawable
 
-  if drawable > drawableCount then
-    drawable = 0
-  elseif drawable < 0 then
-    drawable = drawableCount
+  if type(value) == "number" then
+    
+    if value > drawableCount then
+      value = 0
+    elseif value < 0 then
+      value = drawableCount
+    end
+
+    SetPedComponentVariation(self.ped, component, value, 0, GetPedPaletteVariation(self.ped, component))
+    self.components[component].drawable = value
+    self.components[component].texture = 0
+  elseif type(value) == "string" then
+    local type = "+"
+    local incrimental = 0
+
+    if string.match(value, "+") then
+      type = "+"
+    elseif string.match(value, "-") then
+      type = "-"
+    end
+
+    incrimental = tonumber(value:gsub(type, ""))
+
+    local newDrawable = Utils.IncrimentNumber(type, incrimental, currentComponent, drawableCount)
+    SetPedComponentVariation(self.ped, component, newDrawable, 0, GetPedPaletteVariation(self.ped, component))
+    self.props[prop].drawable = newDrawable
+    self.props[prop].texture = 0
   end
-
-  SetPedComponentVariation(self.ped, component, drawable, 0, GetPedPaletteVariation(self.ped, component))
-
-  self.components[component].drawable = drawable
-  self.components[component].texture = 0
 end
 
-function CharacterBuilder:NextComponentDrawable(component)
+function CharacterBuilder:SetComponentTexture(component, value)
   component = componentEnum[component]
 
   if not component then return end
 
-  local drawableCount = GetNumberOfPedDrawableVariations(self.ped, component) - 1
-  local currentDrawable = self.components[component].drawable + 1
-  if currentDrawable > drawableCount then
-    currentDrawable = 0
+  local textureCount = GetNumberOfPedTextureVariations(self.ped, component, self.components[component].drawable) - 1
+  local currentTexture = self.components[component].texture
+
+  if type(value) == "number" then
+
+    if value > textureCount then
+      value = 0
+    elseif value < 0 then
+      value = textureCount
+    end
+
+    SetPedComponentVariation(self.ped, component, self.components[component].drawable, value, GetPedPaletteVariation(self.ped, component))
+    self.components[component].texture = value
+  elseif type(value) == "string" then
+    local type = "+"
+    local incrimental = 0
+
+    if string.match(value, "+") then
+      type = "+"
+    elseif string.match(value, "-") then
+      type = "-"
+    end
+
+    incrimental = tonumber(value:gsub(type, ""))
+
+    local newTexture = Utils.IncrimentNumber(type, incrimental, currentTexture, textureCount)
+    SetPedComponentVariation(self.ped, component, self.components[component].drawable, newTexture, GetPedPaletteVariation(self.ped, component))
+    self.components[component].texture = newTexture
   end
-
-  SetPedComponentVariation(self.ped, component, currentDrawable, 0, GetPedPaletteVariation(self.ped, component))
-  self.components[component].drawable = currentDrawable
-  self.components[component].texture = 0
-end
-
-function CharacterBuilder:PrevComponentDrawable(component)
-  component = componentEnum[component]
-
-  if not component then return end
-
-  local drawableCount = GetNumberOfPedDrawableVariations(self.ped, component) - 1
-  local currentDrawable = self.components[component].drawable - 1
-  if currentDrawable < 0 then
-    currentDrawable = drawableCount
-  end
-
-  SetPedComponentVariation(self.ped, component, currentDrawable, 0, GetPedPaletteVariation(self.ped, component))
-  self.components[component].drawable = currentDrawable
-  self.components[component].texture = 0
-end
-
--- Texture Methods
-function CharacterBuilder:SetComponentTexture(component, texture)
-  component = componentEnum[component]
-
-  if not component then return end
-
-  local textureCount = GetNumberOfPedTextureVariations(self.ped, component, self.components[component].drawable, texture) - 1
-
-  if texture > textureCount then
-    texture = 0
-  elseif texture < 0 then
-    texture = textureCount
-  end
-  
-  SetPedComponentVariation(self.ped, component, self.components[component], texture, GetPedPaletteVariation(self.ped, component))
-  self.components[component].texture = texture
-end
-
-function CharacterBuilder:NextComponentTexture(component)
-  component = componentEnum[component]
-
-  if not component then return end
-
-  local textureCount = GetNumberOfPedTextureVariations(self.ped, component, self.components[component].drawable, texture) - 1
-  local currentTexture = self.components[component].texture + 1
-
-  if currentTexture > textureCount then
-    currentTexture = 0
-  end
-
-  SetPedComponentVariation(self.ped, component, self.components[component].drawable, currentTexture, GetPedPaletteVariation(self.ped, component))
-  self.components[component].texture = currentTexture
-end
-
-function CharacterBuilder:PrevComponentTexture(component)
-  component = componentEnum[component]
-
-  if not component then return end
-
-  local textureCount = GetNumberOfPedTextureVariations(self.ped, component, self.components[component].drawable, texture) - 1
-  local currentTexture = self.components[component].texture - 1
-
-  if currentTexture < 0 then
-    currentTexture = textureCount
-  end
-
-  SetPedComponentVariation(self.ped, component, self.components[component].drawable, currentTexture, GetPedPaletteVariation(self.ped, component))
-  self.components[component].texture = currentTexture
 end
 
 -- Prop Methods
--- function CharacterBuilder:SetPropDrawable(prop, drawable)
---   prop = propEnum[prop]
-
---   if not prop then return end
-
---   local propCount = GetNumberOfPedPropDrawableVariations(self.ped, prop) - 1
---   local currentProp = self.props[prop].drawable
-
---   if drawable < 0 then
---     currentProp = propCount
---   elseif drawable > propCount then
---     currentProp = 0
---   end
-
---   SetPedPropIndex(self.ped, prop, drawable, 0, true)
---   self.props[prop].drawable = currentProp
---   self.props[prop].texture = 0
--- end
-
 function CharacterBuilder:SetPropDrawable(prop, value)
   prop = propEnum[prop]
 
   if not prop then return end
 
-  local propCount = GetNumberOfPedPropDrawableVariations(self.ped, prop) - 1
+  local drawableCount = GetNumberOfPedPropDrawableVariations(self.ped, prop) - 1
   local currentProp = self.props[prop].drawable
 
   if type(value) == "number" then
     
-    if value > propCount then
+    if value > drawableCount then
       value = 0
     elseif value < 0 then
-      value = propCount
+      value = drawableCount
     end
 
     SetPedPropIndex(self.ped, prop, value, 0, true)
@@ -241,23 +196,47 @@ function CharacterBuilder:SetPropDrawable(prop, value)
 
     incrimental = tonumber(value:gsub(type, ""))
 
-    local newProp = Utils.IncrimentNumber(type, incrimental, currentProp, propCount)
-    SetPedPropIndex(self.ped, prop, newProp, 0, true)
-    self.props[prop].drawable = newProp
+    local newDrawable = Utils.IncrimentNumber(type, incrimental, currentProp, drawableCount)
+    SetPedPropIndex(self.ped, prop, newDrawable, 0, true)
+    self.props[prop].drawable = newDrawable
     self.props[prop].texture = 0
   end
 end
 
-function CharacterBuilder:SetPropTexture()
+function CharacterBuilder:SetPropTexture(prop, value)
+  prop = propEnum[prop]
 
-end
+  if not prop then return end
 
-function CharacterBuilder:NextPropTexture()
+  local textureCount = GetNumberOfPedTextureVariations(self.ped, prop, self.props[prop].drawable) - 1
+  local currentTexture = self.props[prop].texture
 
-end
+  if type(value) == "number" then
 
-function CharacterBuilder:PrevPropTexture()
+    if value > textureCount then
+      value = 0
+    elseif value < 0 then
+      value = textureCount
+    end
 
+    SetPedPropIndex(self.ped, prop, self.props[prop].drawable, value, true)
+    self.props[prop].texture = value
+  elseif type(value) == "string" then
+    local type = "+"
+    local incrimental = 0
+
+    if string.match(value, "+") then
+      type = "+"
+    elseif string.match(value, "-") then
+      type = "-"
+    end
+
+    incrimental = tonumber(value:gsub(type, ""))
+
+    local newTexture = Utils.IncrimentNumber(type, incrimental, currentTexture, textureCount)
+    SetPedPropIndex(self.ped, prop, self.props[prop].drawable, newTexture, true)
+    self.props[prop].texture = value
+  end
 end
 
 -- Ped Eye Color
