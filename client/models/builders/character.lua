@@ -1,5 +1,6 @@
 local componentEnum = Enums.Get("PedComponents")
 local propEnum = Enums.Get("PedProps")
+local faceFeaturesEnum = Enums.Get("PedFaceFeatures")
 
 CharacterBuilder = {}
 CharacterBuilder.__index = CharacterBuilder
@@ -27,6 +28,12 @@ function CharacterBuilder.New()
   newCharacterBuilder.props = {}
   for k, v in pairs(componentEnum) do
     newCharacterBuilder.props[v] = { drawable = 0, texture = 0 }
+  end
+
+  -- Face Features
+  newCharacterBuilder.facefeatures = {}
+  for k, v in pairs(faceFeaturesEnum) do
+    newCharacterBuilder.facefeatures[v] = 0.0
   end
 
   return newCharacterBuilder
@@ -121,7 +128,7 @@ function CharacterBuilder:SetComponentDrawable(component, value)
 
     incrimental = tonumber(value:gsub(type, ""))
 
-    local newDrawable = Utils.IncrimentNumber(type, incrimental, currentComponent, drawableCount)
+    local newDrawable = Utils.IncrimentNumber(type, incrimental, 1, currentComponent, drawableCount)
     SetPedComponentVariation(self.ped, component, newDrawable, 0, GetPedPaletteVariation(self.ped, component))
     self.props[prop].drawable = newDrawable
     self.props[prop].texture = 0
@@ -158,7 +165,7 @@ function CharacterBuilder:SetComponentTexture(component, value)
 
     incrimental = tonumber(value:gsub(type, ""))
 
-    local newTexture = Utils.IncrimentNumber(type, incrimental, currentTexture, textureCount)
+    local newTexture = Utils.IncrimentNumber(type, incrimental, 1, currentTexture, textureCount)
     SetPedComponentVariation(self.ped, component, self.components[component].drawable, newTexture, GetPedPaletteVariation(self.ped, component))
     self.components[component].texture = newTexture
   end
@@ -196,7 +203,7 @@ function CharacterBuilder:SetPropDrawable(prop, value)
 
     incrimental = tonumber(value:gsub(type, ""))
 
-    local newDrawable = Utils.IncrimentNumber(type, incrimental, currentProp, drawableCount)
+    local newDrawable = Utils.IncrimentNumber(type, incrimental, 1, currentProp, drawableCount)
     SetPedPropIndex(self.ped, prop, newDrawable, 0, true)
     self.props[prop].drawable = newDrawable
     self.props[prop].texture = 0
@@ -233,36 +240,118 @@ function CharacterBuilder:SetPropTexture(prop, value)
 
     incrimental = tonumber(value:gsub(type, ""))
 
-    local newTexture = Utils.IncrimentNumber(type, incrimental, currentTexture, textureCount)
+    local newTexture = Utils.IncrimentNumber(type, incrimental, 1, currentTexture, textureCount)
     SetPedPropIndex(self.ped, prop, self.props[prop].drawable, newTexture, true)
     self.props[prop].texture = value
   end
 end
 
 -- Ped Eye Color
-function CharacterBuilder:SetEyeColor()
+function CharacterBuilder:SetEyeColor(color, value)
   if Utils.IsMPPed(self.ped) then
-    
+    local eyeColorCount = 32
+    local currentEyeColor = GetPedEyeColor(self.ped)
+
+    if type(value) == "number" then
+      if value > eyeColorCount then
+        value = 0
+      elseif value < 0 then
+        value = eyeColorCount
+      end
+
+      SetPedEyeColor(self.ped, value)
+      self.data.eyeColor = value
+    elseif type(value) == "string" then
+      local type = "+"
+      local incrimental = 0
+
+      if string.match(value, "+") then
+        type = "+"
+      elseif string.match(value, "-") then
+        type = "-"
+      end
+
+      incrimental = tonumber(value:gsub(type, ""))
+
+      local newEyeColor = Utils.IncrimentNumber(type, incrimental, 1, currentEyeColor, eyeColorCount)
+      SetPedEyeColor(self.ped, newEyeColor)
+      self.data.eyeColor = newEyeColor
+    end
   end
 end
 
-function CharacterBuilder:NextEyeColor()
+-- Ped Face Feature
+function CharacterBuilder:SetFaceFeature(feature, value)
   if Utils.IsMPPed(self.ped) then
+    feature = faceFeaturesEnum[feature]
 
+    if not feature then return end
+
+    local currentRange = self.facefeatures[feature]
+
+    if type(value) == "number" then
+
+      if value > 1.0 then
+        value = 0.0
+      elseif value < 0.0 then
+        value = 1.0
+      end
+
+      SetPedFaceFeature(self.ped, feature, value)
+      self.facefeatures[feature] = value
+    elseif type(value) == "string" then
+      local type = "+"
+      local incrimental = 0
+
+      if string.match(value, "+") then
+        type = "+"
+      elseif string.match(valie, "-") then
+        type = "-"
+      end
+
+      incrimental = tonumber(value:gsub(type, ""))
+
+      local newRange = Utils.IncrimentNumber(type, incrimental, 0.1, currentRange, 1.0)
+      SetPedFaceFeature(self.ped, feature, newRange)
+      self.facefeatures[feature] = newRange
+    end
   end
 end
 
-function CharacterBuilder:PrevEyeColor()
-  if Utils.IsMPPed(self.ped) then
+-- Set Head Blend
 
-  end
-end
+-- Set Head Overlay
 
+-- Set Head Overlay Color
+
+-- Sets Ped Defaults
 function CharacterBuilder:SetDefaults()
-  SetPedDefaultComponentVariation(PlayerPedId())
+  SetPedDefaultComponentVariation(self.ped)
+
+  -- Sets Components
+  for _, v in pairs(componentEnum) do
+    local currentDrawable = GetPedDrawableVariation(self.ped, v)
+    local currentTexture = GetPedTextureVariation(self.ped, v)
+    self.components[v] = { drawable = currentDrawable, texture = currentTexture }
+  end
+
+  -- Sets Props
+  for _, v in pairs(propEnum) do
+    local currentProp = GetPedPropIndex(self.ped, v)
+    local currentTexture = GetPedPropTextureIndex(self.ped, v)
+    self.props[v] = { prop = currentProp, texture = currentTexture }
+  end
+
+  -- Sets Eye Color
+  self.data.eyeColor = GetPedEyeColor(self.ped)
 end
 
 -- Returns a structured object of character data and returns it
 function CharacterBuilder:Build()
-
+  return {
+    data = self.data,
+    parents = self.parents,
+    components = self.components,
+    props = self.props
+  }
 end

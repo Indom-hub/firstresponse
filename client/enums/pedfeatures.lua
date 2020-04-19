@@ -1,0 +1,22 @@
+Enums.Add("PedFaceFeatures", {
+  NoseWidth = 0,
+  NosePeakHeight = 1,
+  NosePeakLength = 2,
+  NoseBoneHeight = 3,
+  NosePeakLowering = 4,
+  NoseBoneTwist = 5,
+  EyeBrowHeight = 6,
+  EyeBrowForward = 7,
+  CheekBoneHeight = 8,
+  CheekBoneWidth = 9,
+  CheekWidth = 10,
+  EyeOpenings = 11,
+  LipThickness = 12,
+  JawBoneWidth = 13,
+  JawBoneBackLength = 14,
+  ChinBoneLowering = 15,
+  ChinBoneLength = 16,
+  ChinBoneWidth = 17,
+  ChinHole = 18,
+  NeckThickness = 19
+})
