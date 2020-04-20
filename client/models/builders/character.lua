@@ -100,10 +100,10 @@ end
 function CharacterBuilder:SetComponentDrawable(component, value)
   component = componentEnum[component]
 
-  if not prop then return end
+  if not component then return end
 
   local drawableCount = GetNumberOfPedDrawableVariations(self.ped, component) - 1
-  local currentComponent = self.components[component].drawable
+  local currentDrawable = self.components[component].drawable
 
   if type(value) == "number" then
     
@@ -117,21 +117,23 @@ function CharacterBuilder:SetComponentDrawable(component, value)
     self.components[component].drawable = value
     self.components[component].texture = 0
   elseif type(value) == "string" then
-    local type = "+"
+    local incType = "+"
     local incrimental = 0
 
     if string.match(value, "+") then
-      type = "+"
+      incType = "+"
     elseif string.match(value, "-") then
-      type = "-"
+      incType = "-"
     end
 
-    incrimental = tonumber(value:gsub(type, ""))
+    local stringNumber = value:gsub(incType, "")
 
-    local newDrawable = Utils.IncrimentNumber(type, incrimental, 1, currentComponent, drawableCount)
+    incrimental = tonumber(stringNumber)
+
+    local newDrawable = Utils.IncrimentNumber(incType, incrimental, 1, currentDrawable, 0, drawableCount)
     SetPedComponentVariation(self.ped, component, newDrawable, 0, GetPedPaletteVariation(self.ped, component))
-    self.props[prop].drawable = newDrawable
-    self.props[prop].texture = 0
+    self.components[component].drawable = newDrawable
+    self.components[component].texture = 0
   end
 end
 
@@ -154,18 +156,20 @@ function CharacterBuilder:SetComponentTexture(component, value)
     SetPedComponentVariation(self.ped, component, self.components[component].drawable, value, GetPedPaletteVariation(self.ped, component))
     self.components[component].texture = value
   elseif type(value) == "string" then
-    local type = "+"
+    local incType = "+"
     local incrimental = 0
 
     if string.match(value, "+") then
-      type = "+"
+      incType = "+"
     elseif string.match(value, "-") then
-      type = "-"
+      incType = "-"
     end
 
-    incrimental = tonumber(value:gsub(type, ""))
+    local stringNumber = value:gsub(incType, "")
 
-    local newTexture = Utils.IncrimentNumber(type, incrimental, 1, currentTexture, textureCount)
+    incrimental = tonumber(stringNumber)
+
+    local newTexture = Utils.IncrimentNumber(incType, incrimental, 1, currentTexture, 0, textureCount)
     SetPedComponentVariation(self.ped, component, self.components[component].drawable, newTexture, GetPedPaletteVariation(self.ped, component))
     self.components[component].texture = newTexture
   end
@@ -192,18 +196,21 @@ function CharacterBuilder:SetPropDrawable(prop, value)
     self.props[prop].drawable = value
     self.props[prop].texture = 0
   elseif type(value) == "string" then
-    local type = "+"
+    local incType = "+"
     local incrimental = 0
 
     if string.match(value, "+") then
-      type = "+"
+      incType = "+"
     elseif string.match(value, "-") then
-      type = "-"
+      incType = "-"
     end
 
-    incrimental = tonumber(value:gsub(type, ""))
+    
+    local stringNumber = value:gsub(incType, "")
 
-    local newDrawable = Utils.IncrimentNumber(type, incrimental, 1, currentProp, drawableCount)
+    incrimental = tonumber(stringNumber)
+
+    local newDrawable = Utils.IncrimentNumber(incType, incrimental, 1, currentProp, 0, drawableCount)
     SetPedPropIndex(self.ped, prop, newDrawable, 0, true)
     self.props[prop].drawable = newDrawable
     self.props[prop].texture = 0
@@ -229,18 +236,20 @@ function CharacterBuilder:SetPropTexture(prop, value)
     SetPedPropIndex(self.ped, prop, self.props[prop].drawable, value, true)
     self.props[prop].texture = value
   elseif type(value) == "string" then
-    local type = "+"
+    local incType = "+"
     local incrimental = 0
 
     if string.match(value, "+") then
-      type = "+"
+      incType = "+"
     elseif string.match(value, "-") then
-      type = "-"
+      incType = "-"
     end
 
-    incrimental = tonumber(value:gsub(type, ""))
+    local stringNumber = value:gsub(incType, "")
 
-    local newTexture = Utils.IncrimentNumber(type, incrimental, 1, currentTexture, textureCount)
+    incrimental = tonumber(stringNumber)
+
+    local newTexture = Utils.IncrimentNumber(incType, incrimental, 1, currentTexture, 0, textureCount)
     SetPedPropIndex(self.ped, prop, self.props[prop].drawable, newTexture, true)
     self.props[prop].texture = value
   end
@@ -262,18 +271,20 @@ function CharacterBuilder:SetEyeColor(color, value)
       SetPedEyeColor(self.ped, value)
       self.data.eyeColor = value
     elseif type(value) == "string" then
-      local type = "+"
+      local incType = "+"
       local incrimental = 0
 
       if string.match(value, "+") then
-        type = "+"
+        incType = "+"
       elseif string.match(value, "-") then
-        type = "-"
+        incType = "-"
       end
 
-      incrimental = tonumber(value:gsub(type, ""))
+      local stringNumber = value:gsub(incType, "")
 
-      local newEyeColor = Utils.IncrimentNumber(type, incrimental, 1, currentEyeColor, eyeColorCount)
+      incrimental = tonumber(stringNumber)
+
+      local newEyeColor = Utils.IncrimentNumber(incType, incrimental, 1, currentEyeColor, 0, eyeColorCount)
       SetPedEyeColor(self.ped, newEyeColor)
       self.data.eyeColor = newEyeColor
     end
@@ -300,18 +311,20 @@ function CharacterBuilder:SetFaceFeature(feature, value)
       SetPedFaceFeature(self.ped, feature, value)
       self.facefeatures[feature] = value
     elseif type(value) == "string" then
-      local type = "+"
+      local incType = "+"
       local incrimental = 0
 
       if string.match(value, "+") then
-        type = "+"
-      elseif string.match(valie, "-") then
-        type = "-"
+        incType = "+"
+      elseif string.match(value, "-") then
+        incType = "-"
       end
 
-      incrimental = tonumber(value:gsub(type, ""))
+      local stringNumber = value:gsub(incType, "")
 
-      local newRange = Utils.IncrimentNumber(type, incrimental, 0.1, currentRange, 1.0)
+      incrimental = tonumber(stringNumber)
+
+      local newRange = Utils.IncrimentNumber(incType, incrimental, 10, currentRange * 100, -100, 100) / 100
       SetPedFaceFeature(self.ped, feature, newRange)
       self.facefeatures[feature] = newRange
     end
@@ -319,6 +332,17 @@ function CharacterBuilder:SetFaceFeature(feature, value)
 end
 
 -- Set Head Blend
+function CharacterBuilder:SetHeadBlend_Parents(type, value)
+  if Utils.IsMPPed(self.ped) then
+
+  end
+end
+
+function CharacterBuilder:SetHeadBlend_Mix(value)
+  if Utils.IsMPPed(self.ped) then
+    
+  end
+end
 
 -- Set Head Overlay
 
