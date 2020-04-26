@@ -1,6 +1,14 @@
+-- Enums
 local componentEnum = Enums.Get("PedComponents")
 local propEnum = Enums.Get("PedProps")
 local faceFeaturesEnum = Enums.Get("PedFaceFeatures")
+local overlays = Enums.Get("PedOverlays")
+
+-- Vars
+local overlayColorTypes = { 
+  [1] = { 2, 1, 10 },
+  [2] = { 5, 8 }
+}
 
 CharacterBuilder = {}
 CharacterBuilder.__index = CharacterBuilder
@@ -28,6 +36,21 @@ function CharacterBuilder.New()
   newCharacterBuilder.props = {}
   for k, v in pairs(componentEnum) do
     newCharacterBuilder.props[v] = { drawable = 0, texture = 0 }
+  end
+
+  -- Overlays
+  newCharacterBuilder.overlays = {}
+  for k1, v1 in pairs(overlays) do
+    newCharacterBuilder.overlays[v1] = { index = 0, opacity = 0.0 }
+
+    for k2, v2 in pairs(overlayColorTypes) do
+      for a = 1, #v2 do
+        if v2[a] == v1 then
+          newCharacterBuilder.overlays[v1].color = 0
+          newCharacterBuilder.overlays[v1].colortwo = 0
+        end
+      end
+    end
   end
 
   -- Face Features
@@ -71,6 +94,21 @@ function CharacterBuilder.FromPed(ped, data)
     local currentProp = GetPedPropIndex(newCharacterBuilder.ped, v)
     local currentTexture = GetPedPropTextureIndex(newCharacterBuilder.ped, v)
     newCharacterBuilder.props[v] = { prop = currentProp, texture = currentTexture }
+  end
+
+  -- Overlays
+  newCharacterBuilder.overlays = {}
+  for k1, v1 in pairs(overlays) do
+    newCharacterBuilder.overlays[v1] = { index = 0, opacity = 0.0 }
+
+    for k2, v2 in pairs(overlayColorTypes) do
+      for a = 1, #v2 do
+        if v2[a] == v1 then
+          newCharacterBuilder.overlays[v1].color = 0
+          newCharacterBuilder.overlays[v1].colortwo = 0
+        end
+      end
+    end
   end
 
   return newCharacterBuilder
@@ -291,6 +329,94 @@ function CharacterBuilder:SetEyeColor(color, value)
   end
 end
 
+-- Set Head Blend newCharacterBuilder.parents = { father = 0, mother = 0, mix = 0.5 }
+function CharacterBuilder:SetHeadBlendParents(parent, value)
+  if Utils.IsMPPed(self.ped) then
+    if type(parent) ~= "string" then return end
+    if parent ~= "mother" and parent ~= "father" then return end
+  
+    parent = parent:lower()
+
+    if type(value) == "number" then
+      if value > 46 then
+        value = 0
+      elseif value < 0 then
+        value = 46
+      end
+
+      self.parents[parent] = value
+      SetPedHeadBlendData(self.ped, self.parents.father, self.parents.mother, 0, self.parents.father, self.parents.mother, 0, self.parents.mix, self.parents.mix, self.parents.mix, false)
+    elseif type(value) == "string" then
+      local incType = "+"
+      local incrimental = 0
+
+      if string.match(value, "+") then
+        incType = "+"
+      elseif string.match(value, "-") then
+        incType = "-"
+      end
+
+      local stringNumber = value:gsub(incType, "")
+
+      incrimental = tonumber(stringNumber)
+
+      local newParent = Utils.IncrimentNumber(incType, incrimental, 1, self.parents[parent], 0, 46)
+      self.parents[parent] = newParent
+
+      print(json.encode(self.parents))
+
+      SetPedHeadBlendData(self.ped, self.parents.father, self.parents.mother, 0, self.parents.father, self.parents.mother, 0, self.parents.mix, self.parents.mix, self.parents.mix, false)
+    end
+  end
+end
+
+function CharacterBuilder:SetHeadBlendMix(value)
+  if Utils.IsMPPed(self.ped) then
+    if type(value) == "number" then
+      if value > 1.0 then
+        value = 0.0
+      elseif value < 0.0 then
+        value = 1.0
+      end
+      self.parents.mix = value
+      SetPedHeadBlendData(self.ped, self.parents.father, self.parents.mother, 0, self.parents.father, self.parents.mother, 0, self.parents.mix, self.parents.mix, self.parents.mix, false)
+    elseif type(value) == "string" then
+      local incType = "+"
+      local incrimental = 0
+
+      if string.match(value, "+") then
+        incType = "+"
+      elseif string.match(value, "-") then
+        incType = "-"
+      end
+
+      local stringNumber = value:gsub(incType, "")
+
+      incrimental = tonumber(stringNumber)
+
+      local newRange = Utils.IncrimentNumber(incType, incrimental, 10, self.parents.mix * 100, 0, 100) / 100
+      self.parents.mix = newRange
+      SetPedHeadBlendData(self.ped, self.parents.father, self.parents.mother, 0, self.parents.father, self.parents.mother, 0, self.parents.mix, self.parents.mix, self.parents.mix, false)
+    end
+
+    print(json.encode(self.parents))
+  end
+end
+
+-- Set Head Overlay
+function CharacterBuilder:SetHeadOverlay(overlay, value)
+  if Utils.IsMPPed(self.ped) then
+    
+  end
+end
+
+-- Set Head Overlay Color
+function CharacterBuilder:SetHeadOverlayColor(overlay, value)
+  if Utils.IsMPPed(self.ped) then
+
+  end
+end
+
 -- Ped Face Feature
 function CharacterBuilder:SetFaceFeature(feature, value)
   if Utils.IsMPPed(self.ped) then
@@ -327,26 +453,10 @@ function CharacterBuilder:SetFaceFeature(feature, value)
       local newRange = Utils.IncrimentNumber(incType, incrimental, 10, currentRange * 100, -100, 100) / 100
       SetPedFaceFeature(self.ped, feature, newRange)
       self.facefeatures[feature] = newRange
+      print(self.facefeatures[feature])
     end
   end
 end
-
--- Set Head Blend
-function CharacterBuilder:SetHeadBlend_Parents(type, value)
-  if Utils.IsMPPed(self.ped) then
-
-  end
-end
-
-function CharacterBuilder:SetHeadBlend_Mix(value)
-  if Utils.IsMPPed(self.ped) then
-    
-  end
-end
-
--- Set Head Overlay
-
--- Set Head Overlay Color
 
 -- Sets Ped Defaults
 function CharacterBuilder:SetDefaults()
